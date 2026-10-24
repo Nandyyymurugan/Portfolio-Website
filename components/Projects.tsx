@@ -331,17 +331,24 @@ const ENRICHED_PROJECTS: ProjectDetail[] = [
           { name: "Member Portal", icon: "⚡", sub: "Zero-Login Magic Links" },
         ],
       },
-      asciiDiagram: `[ Browser Client ]
-       │  ▲
-       │  │ REST (Fetch API / JSON) & Server-Side Jinja2
-       ▼  │
-[ Flask Application Server ] ── (Strict JSON Prompt) ──▶ [ Google Gemini 2.5 Flash ]
-       │  ▲
-       │  │ Flask-SQLAlchemy (ORM)
-       ▼  │
-[ SQLite Database: teamup.db ]
-   ├── Project Entity (8-Char UUID, Topic, Deadline, Lead)
-   └── Task Entity    (12-Char Secret Key, Member, Done Status)`,
+      asciiDiagram: `┌──────────────────────────────────────────────┐
+│                Browser Client                │
+└──────────────────────┬───────────────────────┘
+                       │ ▲
+                       │ │ REST (Fetch API / JSON) & Jinja2
+                       ▼ │
+┌──────────────────────────────────────────────┐       Strict JSON      ┌─────────────────────────────┐
+│           Flask Application Server           ├───────────────────────▶│   Google Gemini 2.5 Flash   │
+└──────────────────────┬───────────────────────┘         Prompt         └─────────────────────────────┘
+                       │ ▲
+                       │ │ Flask-SQLAlchemy (ORM)
+                       ▼ │
+┌──────────────────────────────────────────────┐
+│          SQLite Database: teamup.db          │
+├──────────────────────────────────────────────┴──────────────────────────────────────────────┐
+│  ├── Project Entity (8-Char UUID, Topic, Deadline, Lead)                                    │
+│  └── Task Entity    (12-Char Secret Key, Member, Done Status)                               │
+└─────────────────────────────────────────────────────────────────────────────────────────────┘`,
     },
   },
   {
@@ -471,21 +478,31 @@ const ENRICHED_PROJECTS: ProjectDetail[] = [
           { name: "Repairs Table", icon: "🔧", sub: "ON DELETE CASCADE" },
         ],
       },
-      asciiDiagram: `[ Browser / Frontend SPA ] 
-       │ (HTTP REST / Bearer Token / Multipart Form)
-       ▼
-[ Express.js Middleware ] ──► [ Auth Guard (PBKDF2 Sessions) ]
-       │
-       ├──► File Uploads: Multer ──► [ /uploads/ Invoices & Bills ]
-       │
-       └──► Business Controllers
-                 │ (Parameterized Queries)
-                 ▼
-       [ SQLite Database (fixbox.sqlite) ]
-         ├── Users Table
-         ├── Sessions Table
-         ├── Products Table
-         └── Repairs Table (ON DELETE CASCADE)`,
+      asciiDiagram: `┌──────────────────────────────────────────────┐
+│            Browser / Frontend SPA            │
+└──────────────────────┬───────────────────────┘
+                       │ (HTTP REST / Bearer Token / Multipart)
+                       ▼
+┌──────────────────────────────────────────────┐       Token Guard      ┌─────────────────────────────┐
+│            Express.js Middleware             ├───────────────────────▶│  Auth Guard (PBKDF2 Session)│
+└──────────────┬───────────────────────────────┘                        └─────────────────────────────┘
+               │
+               ├─── Multipart Uploads ───▶ [ /uploads/ Invoices & Bills ]
+               │
+               ▼
+┌──────────────────────────────────────────────┐
+│             Business Controllers             │
+└──────────────────────┬───────────────────────┘
+                       │ (Parameterized Queries)
+                       ▼
+┌──────────────────────────────────────────────┐
+│       SQLite Database (fixbox.sqlite)        │
+├──────────────────────────────────────────────┴──────────────────────────────────────────────┐
+│  ├── Users Table      (PBKDF2 Hashed Credentials, Role Attributes)                          │
+│  ├── Sessions Table   (Bearer Tokens, Expiry Timestamps)                                    │
+│  ├── Products Table   (Asset Details, Purchase & Warranty Dates, Bill Path)                 │
+│  └── Repairs Table    (Defect Logs, Repair Expenses, ON DELETE CASCADE)                     │
+└─────────────────────────────────────────────────────────────────────────────────────────────┘`,
     },
   },
   {
@@ -628,34 +645,35 @@ const ENRICHED_PROJECTS: ProjectDetail[] = [
           { name: "Fault Injection", icon: "🎛️", sub: "Interactive Sandbox" },
         ],
       },
-      asciiDiagram: `┌─────────────────────────┐
-│ Physical Tank Simulator │ (Level, Inflow, Outflow, Temp, Pressure)
-└────────────┬────────────┘
-             │ (Adds realistic sensor noise)
-             ▼
-┌─────────────────────────┐
-│  IoT Telemetry Streamer │ (Simulated edge streaming at 1 Hz)
-└──────┬───────────┬──────┘
-       │           │
-       │           ▼
-       │  ┌────────────────────────┐
-       │  │  Digital Twin Engine   │ (Physics ground truth; zero faults)
-       │  └───────────┬────────────┘
-       │              │
-       │              ▼ (Calculates state deviations: ΔLevel, ΔTemp, ΔPressure)
-       ▼              ▼
-┌─────────────────────────────────┐
-│   Fault Diagnostic Engine       │ (Rolling 10-step window rate-of-change + confidence scoring)
-└────────────────┬────────────────┘
-                 │
-                 ▼
-┌─────────────────────────────────┐
-│    Streamlit SCADA Dashboard    │
-│  • Dual-line Charts (Real vs Twin)
-│  • System Health Index (0-100%)  │
-│  • Active Fault Alarms          │
-│  • Runtime Fault Injection Panel │
-└─────────────────────────────────┘`,
+      asciiDiagram: `┌──────────────────────────────────────────────┐
+│           Physical Tank Simulator            │ (Level, Inflow, Outflow, Temp, Pressure)
+└──────────────────────┬───────────────────────┘
+                       │ (Adds realistic sensor noise)
+                       ▼
+┌──────────────────────────────────────────────┐
+│            IoT Telemetry Streamer            │ (Simulated edge streaming at 1 Hz)
+└──────┬───────────────────────────────┬───────┘
+       │                               │
+       │                               ▼
+       │               ┌──────────────────────────────────────────────┐
+       │               │             Digital Twin Engine              │ (Physics ground truth: zero faults)
+       │               └──────────────────────┬───────────────────────┘
+       │                                      │
+       │                                      ▼ (Deviations: ΔLevel, ΔTemp, ΔPressure)
+       ▼                                      ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                       Fault Diagnostic Engine                       │ (Rolling 10-step rate-of-change + confidence)
+└──────────────────────────────────┬──────────────────────────────────┘
+                                   │
+                                   ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                      Streamlit SCADA Dashboard                      │
+├─────────────────────────────────────────────────────────────────────┤
+│  • Dual-line Comparison Charts (Real Sensor Telemetry vs Twin)      │
+│  • System Health Index Meter (0–100% Operational Reliability)       │
+│  • Active Fault Alarms & Automated Cutoff Thresholds                │
+│  • Runtime Fault Injection Panel (Pump, Valve, Sensor Drift)        │
+└─────────────────────────────────────────────────────────────────────┘`,
     },
   },
 ];
