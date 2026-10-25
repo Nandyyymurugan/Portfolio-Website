@@ -4,8 +4,8 @@ import "./globals.css";
 import { defaultMetadata, generatePersonSchema } from "@/lib/metadata";
 
 export const viewport: Viewport = {
-  width: 1200,
-  initialScale: 0.32,
+  width: 980,
+  initialScale: 0.39,
   userScalable: true,
 };
 
