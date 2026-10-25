@@ -1,7 +1,13 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { defaultMetadata, generatePersonSchema } from "@/lib/metadata";
+
+export const viewport: Viewport = {
+  width: 1200,
+  initialScale: 0.32,
+  userScalable: true,
+};
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
